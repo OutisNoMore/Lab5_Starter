@@ -1,28 +1,18 @@
 // explore.js
 
+const synth = window.speechSynthesis;
 window.addEventListener('DOMContentLoaded', init);
 
 function init() {
-  const synth = window.speechSynthesis;
   const selectVoice = document.getElementById("voice-select");
   const text = document.getElementById("text-to-speak");
   const button = document.querySelector("button");
   const image = document.querySelector("img");
 
-  let voices = synth.getVoices();
-  for (let i = 0; i < voices.length; i++) {
-    const option = document.createElement("option");
-    option.textContent = `${voices[i].name} (${voices[i].lang})`;
+  populateVoices(selectVoice); // For firefox compatability
+  synth.addEventListener("voiceschanged", () => { populateVoices(selectVoice) }); // To fix delay between loading voices
 
-    if (voices[i].default) {
-      option.textContent += "DEFAULT";
-    }
-
-    option.setAttribute("data-lang", voices[i].lang);
-    option.setAttribute("data-name", voices[i].name);
-    selectVoice.appendChild(option);
-  }
-
+  // Start talking using speech synthesis
   button.addEventListener("click", () => {
     if (text.value != "") {
       const talk = new SpeechSynthesisUtterance(text.value);
@@ -40,4 +30,20 @@ function init() {
       });
     }
   });
+}
+
+// Get and load all available voices 
+// Taken from: https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis/voiceschanged_event
+function populateVoices(selectVoice) {
+  const voices = synth.getVoices();
+  for (let i = 0; i < voices.length; i++) {
+    const option = document.createElement("option");
+    option.textContent = `${voices[i].name} (${voices[i].lang})`;
+    if (voices[i].default) {
+      option.textContent += "DEFAULT";
+    }
+    option.setAttribute("data-lang", voices[i].lang);
+    option.setAttribute("data-name", voices[i].name);
+    selectVoice.appendChild(option);
+  }
 }
