@@ -34,8 +34,9 @@ function init() {
 
 // Get and load all available voices 
 // Taken from: https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis/voiceschanged_event
+let voices = [];
 function populateVoices(selectVoice) {
-  const voices = synth.getVoices();
+  voices = synth.getVoices();
   for (let i = 0; i < voices.length; i++) {
     const option = document.createElement("option");
     option.textContent = `${voices[i].name} (${voices[i].lang})`;
